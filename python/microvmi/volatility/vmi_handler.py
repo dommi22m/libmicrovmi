@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, urlparse
 from urllib.request import BaseHandler, Request
+from contextlib import contextmanager
 
 from microvmi import CommonInitParamsPy, DriverInitParamsPy, DriverType, KVMInitParamsPy, MemflowInitParamsPy, Microvmi
 
@@ -19,6 +20,15 @@ except ImportError:
 
 micro: Optional[Microvmi] = None
 
+
+@contextmanager
+def pause_ctxt(micro: Microvmi):
+    micro.pause()
+    try:
+        yield micro
+    finally:
+        micro.resume()
+        
 
 class MicrovmiHandlerError(Exception):
     pass
@@ -52,7 +62,8 @@ class VMIHandler(VolatilityHandler):
             return micro.padded_memory
         # init Microvmi
         micro = Microvmi(driver_type, init_params)
-        return micro.padded_memory
+        with pause_ctxt(micor):
+            return micro.padded_memory
 
 
 def url_to_driver_parameters(url: str) -> Tuple[Optional[DriverType], Optional[DriverInitParamsPy]]:
