@@ -62,8 +62,8 @@ class VMIHandler(VolatilityHandler):
             return micro.padded_memory
         # init Microvmi
         micro = Microvmi(driver_type, init_params)
-        with pause_ctxt(micor):
-            return micro.padded_memory
+        #with pause_ctxt(micor):
+        return micro.padded_memory
 
 
 def url_to_driver_parameters(url: str) -> Tuple[Optional[DriverType], Optional[DriverInitParamsPy]]:
